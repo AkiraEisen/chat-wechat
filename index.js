@@ -3,6 +3,15 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const { init: initDB, Counter } = require("./db");
+
+
+const configuration = new Configuration({
+  apiKey: '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',
+  basePath: 'https://api.openai.com/v1',
+});
+const openai = new OpenAIApi(configuration);
+
+
 var xml2js = require("xml2js");
 //创建xml->js的对象
 var parser = new xml2js.Parser({explicitArray: false});
@@ -24,71 +33,25 @@ app.get("/api/test", function(req, res) {
   res.send("测试接口!")
 })
 
-//3. 设置路由
+app.get("/api/gpt", async function(req, res) {
+  const response = await openai.createCompletion({
+    model: 'gpt-3.5-turbo',
+    messages: [{role: 'user', content: 'hello'}],
+    temperature: 1
+  })
+  const message = response?.data?.choices[0].message?.content;
+  res.send(message);
+})
+
+
 app.get("/api/entry", function(req, res){
-  console.log(req.body.action);
+  console.log("/api/entry get: " + req)
   res.send("success");
 })
 
 //添加post的路由，处理微信服务器转发过来的用户的消息
 app.post("/api/entry", function(req, res){
-  // console.log("用户发送消息了");
-  //1. 获取post请求中的内容
-
-  var bufferList = [];
-  req.on("data", function(chunk){
-    bufferList.push(chunk);
-  })
-
-  req.on("end", function(){
-    var result = Buffer.concat(bufferList);
-    //将获取到的微信服务器发来的消息数据 使用 xml2js转成js对象
-    parser.parseString(result.toString(), function(err, result){
-
-      //声明一个变量，用来保存我们最终要回复给用户的消息
-      var msg = "";
-
-      //如果是文本消息：就处理
-      if(result.xml.MsgType == "text"){
-        switch(result.xml.Content){
-          case "1":
-            msg = "你好，很高兴认识你";
-            break;
-          case "2":
-            msg = "Hello, Nice to meet you";
-            break;
-          case "3":
-            msg = "aniasiyo"
-            break;
-          default:
-            msg = "请选择您的语言：1. 汉语 2. 英语 3. 日语"
-        }
-      }
-
-      //将最终要回复给用户的消息，响应给微信服务器
-      //这个消息，也是以xml格式的数据进行发送的
-
-      //响应给微信服务器的数据中也包含如下几个参数：
-      //ToUserName: '哪个用户发消息来的',
-      //FromUserName: '写自己公众号的id',
-      //CreateTime: 消息的发送时间,
-      //MsgType: 'text',
-      //Content: '要回复给用户的消息'
-
-      //创建一个回复消息的对象
-      var returnMsg = {
-        ToUserName: result.xml.FromUserName,
-        FromUserName: result.xml.ToUserName,
-        CreateTime: +new Date(),
-        MsgType: "text",
-        Content: msg
-      }
-
-      //将回复消息对象转换成xml格式的数据，响应给微信服务器
-      res.send(builder.buildObject(returnMsg));
-
-    })
-  })
+  console.log("/api/entry post: " + req)
 })
 
 const port = process.env.PORT || 80;

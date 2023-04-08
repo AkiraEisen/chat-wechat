@@ -2,23 +2,14 @@ const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-const { init: initDB, Counter } = require("./db");
-
+const { init: initDB } = require("./db");
+const {OpenAIApi, Configuration} = require("openai")
 
 const configuration = new Configuration({
   apiKey: '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',
   basePath: 'https://api.openai.com/v1',
 });
 const openai = new OpenAIApi(configuration);
-
-
-var xml2js = require("xml2js");
-//创建xml->js的对象
-var parser = new xml2js.Parser({explicitArray: false});
-//创建js->xml的对象
-var builder = new xml2js.Builder({rootName: "xml", cdata: true, headless: true});
-
-
 
 const logger = morgan("tiny");
 
@@ -56,7 +47,7 @@ app.post("/api/entry", function(req, res){
 const port = process.env.PORT || 80;
 
 async function bootstrap() {
-  await initDB();
+  // await initDB();
   app.listen(port, () => {
     console.log("启动成功", port);
   });

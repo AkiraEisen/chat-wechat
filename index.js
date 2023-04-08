@@ -19,6 +19,11 @@ app.use(express.json());
 app.use(cors());
 app.use(logger);
 
+app.get("/api/test", function(req, res) {
+  console.log('测试接口！')
+  res.send("测试接口!")
+})
+
 //3. 设置路由
 app.get("/api/entry", function(req, res){
   // console.log("有人来请求了！！");

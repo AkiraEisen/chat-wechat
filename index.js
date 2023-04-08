@@ -26,16 +26,8 @@ app.get("/api/test", function(req, res) {
 
 //3. 设置路由
 app.get("/api/entry", function(req, res){
-  // console.log("有人来请求了！！");
-  //当配置了微信公众号的服务器URL之后，微信服务器会向当前地址发送一个校验请求
-  //校验请求是一个get请求，参数中携带了一个echostr
-  //我们需要将这个echostr原样返回给微信服务器，返回成功之后，校验成功，开发者配置生效
-
-  //1. express中获取get请求的参数
-  console.log(req.query);
-
-  //2. 将请求参数中的echostr原样返回给 微信服务器即可通过验证
-  res.send(req.query.echostr);
+  console.log(req.body.action);
+  res.send("success");
 })
 
 //添加post的路由，处理微信服务器转发过来的用户的消息

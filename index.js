@@ -43,7 +43,6 @@ app.get("/api/gpt", async function(req, res) {
   res.send(message);
 })
 
-
 app.get("/api/entry", function(req, res){
   console.log("/api/entry get: " + req)
   res.send("success");

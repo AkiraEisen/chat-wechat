@@ -17,6 +17,10 @@ app.get("/", async (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
+app.post("/api/entry", async (req, res) => {
+  console.log(req)
+})
+
 // 更新计数
 app.post("/api/count", async (req, res) => {
   const { action } = req.body;
@@ -59,3 +63,4 @@ async function bootstrap() {
 }
 
 bootstrap();
+
